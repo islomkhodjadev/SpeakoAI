@@ -31,12 +31,12 @@ def check_database():
     """Check if database exists and initialize if needed"""
     print("🗄️  Checking database...")
     
-    db_path = Path("backend/data.db")
+    db_path = Path("data.db")
     if not db_path.exists():
         print("📝 Initializing database...")
         try:
             import asyncio
-            from backend.models import init_db
+            from app.models import init_db
             asyncio.run(init_db())
             print("✅ Database initialized successfully")
         except Exception as e:
@@ -53,7 +53,7 @@ def start_server():
     
     try:
         # Change to backend directory
-        os.chdir("backend")
+        os.chdir("")
         
         # Start the server
         process = subprocess.Popen([
@@ -107,7 +107,7 @@ def start_telegram_bot():
     print("🤖 Starting Telegram Bot...")
     
     # Check if bot token is configured
-    bot_file = Path("backend/telegram_bot.py")
+    bot_file = Path("services/telegram_bot.py")
     if not bot_file.exists():
         print("❌ Telegram bot file not found")
         return
@@ -122,7 +122,7 @@ def start_telegram_bot():
             return
     
     try:
-        os.chdir("backend")
+        os.chdir("")
         subprocess.run([sys.executable, "telegram_bot.py"])
     except Exception as e:
         print(f"❌ Error starting Telegram bot: {e}")
@@ -131,7 +131,7 @@ def run_tests():
     """Run API tests"""
     print("🧪 Running API tests...")
     
-    test_file = Path("test_api.py")
+    test_file = Path("tests/api/test_api.py")
     if not test_file.exists():
         print("❌ Test file not found")
         return

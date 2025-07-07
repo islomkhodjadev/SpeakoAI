@@ -9,7 +9,7 @@ from telegram.ext import (
     filters,
     ContextTypes,
 )
-import requests as rq
+import conn as rq
 from typing import Optional
 import json
 from dotenv import load_dotenv

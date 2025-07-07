@@ -9,7 +9,6 @@ class QuestionSchema(BaseModel):
     question_text: str
     sample_answer: Optional[str] = None
     category: Optional[str] = None
-    difficulty: Optional[str] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
@@ -20,7 +19,6 @@ class QuestionCreateSchema(BaseModel):
     question_text: str = Field(..., min_length=10, description="The question text")
     sample_answer: Optional[str] = None
     category: Optional[str] = None
-    difficulty: Optional[str] = Field(None, pattern="^(Easy|Medium|Hard)$")
 
 
 class QuestionUpdateSchema(BaseModel):
@@ -28,7 +26,6 @@ class QuestionUpdateSchema(BaseModel):
     question_text: Optional[str] = Field(None, min_length=10)
     sample_answer: Optional[str] = None
     category: Optional[str] = None
-    difficulty: Optional[str] = Field(None, pattern="^(Easy|Medium|Hard)$")
 
 
 class UserSchema(BaseModel):

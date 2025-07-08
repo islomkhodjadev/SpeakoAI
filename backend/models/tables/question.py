@@ -1,3 +1,14 @@
+
+from backend.core.db.models import Base
+from sqlalchemy import   func, String, Integer, Text
+from sqlalchemy.types import DateTime
+from sqlalchemy.orm import  Mapped, mapped_column, relationship
+import datetime
+
+
+
+
+
 class Question(Base):
     __tablename__ = "questions"
 

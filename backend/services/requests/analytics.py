@@ -1,6 +1,7 @@
 from sqlalchemy import select, func, desc
-from backend.models  import async_session, User, Question, UserResponse, Feedback
-
+from backend.models.tables.user import User
+from backend.models.tables.user_response import UserResponse
+from backend.models.tables.question import Question
 from backend.models.schemas.schemas import (
     QuestionSchema,
     UserScoreSchema, QuestionWithResponsesSchema
@@ -15,6 +16,9 @@ from backend.services.conn import connection
 
 
 # Analytics and Scoring Operations
+from backend.services.requests.user_response import get_responses_by_question
+
+
 @connection
 async def get_user_scores(session, user_id: int) -> Optional[UserScoreSchema]:
     """Get comprehensive user scores and statistics"""

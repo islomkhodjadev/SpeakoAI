@@ -1,4 +1,11 @@
 
+from backend.core.db.models import Base
+from sqlalchemy import func,  BigInteger, String
+from sqlalchemy.types import DateTime
+from sqlalchemy.orm import  Mapped, mapped_column, relationship
+import datetime
+
+
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)

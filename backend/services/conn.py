@@ -1,4 +1,4 @@
-from models import async_session, User, Question, UserResponse, Feedback
+from backend.core.db.models import async_session
 
 
 

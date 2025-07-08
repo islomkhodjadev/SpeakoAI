@@ -1,3 +1,15 @@
+from sqlalchemy import select
+from fastapi import HTTPException
+from backend.models.schemas.schemas import (
+ UserCreateSchema,
+    UserSchema, UserUpdateSchema
+)
+from typing import List, Optional
+
+from backend.models.tables.user import User
+from backend.services.conn import connection
+
+
 
 # User CRUD Operations
 @connection

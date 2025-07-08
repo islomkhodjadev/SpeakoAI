@@ -1,4 +1,11 @@
 
+from backend.core.db.models import Base
+from sqlalchemy import ForeignKey, func, String, Float,Text
+from sqlalchemy.types import DateTime
+from sqlalchemy.orm import  Mapped, mapped_column, relationship
+import datetime
+
+
 class UserResponse(Base):
     __tablename__ = "user_responses"
 

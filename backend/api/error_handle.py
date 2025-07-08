@@ -1,11 +1,10 @@
-from fastapi import HTTPException
+
+from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
-from app.main import app
 
 
 # Error handling
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request, exc):
+async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail, "status_code": exc.status_code},

@@ -1,3 +1,11 @@
+
+from backend.core.db.models import Base
+from sqlalchemy import  ForeignKey, func, Text
+from sqlalchemy.types import DateTime
+from sqlalchemy.orm import  Mapped, mapped_column, relationship
+import datetime
+
+
 class Feedback(Base):
     __tablename__ = "feedbacks"
 

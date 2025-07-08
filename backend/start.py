@@ -107,7 +107,7 @@ def start_telegram_bot():
     print("🤖 Starting Telegram Bot...")
     
     # Check if bot token is configured
-    bot_file = Path("services/telegram_bot.py")
+    bot_file = Path("telegram_bot.py")
     if not bot_file.exists():
         print("❌ Telegram bot file not found")
         return

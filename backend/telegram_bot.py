@@ -9,9 +9,25 @@ from telegram.ext import (
     filters,
     ContextTypes,
 )
-import requests as rq
+from backend.models.tables.user import User
+from backend.models.tables.feedback import Feedback
+from backend.models.tables.question import Question
+from backend.models.tables.user_response import UserResponse
+from backend.core.db.models import Base
+
+from backend.models.schemas.schemas import UserCreateSchema  # make sure it's imported
+
+from backend.services.requests.user import create_user
+
+
+
+from backend.services.requests import (
+    user as rq_user,
+    question as rq_question,
+    user_response as rq_response,
+    analytics as rq_analytics,
+)
 from typing import Optional
-import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -53,15 +69,18 @@ class SpeakoAIBot:
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_user_response)
         )
 
+
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /start command"""
         user = update.effective_user
 
         # Register user in database
         try:
-            user_data = await rq.set_user(
+
+            user_data = UserCreateSchema(
                 tg_id=user.id, first_name=user.first_name, username=user.username
             )
+            await create_user(user_data=user_data)
 
             welcome_message = f"""
 🎉 Welcome to SpeakoAI, {user.first_name}!
@@ -137,7 +156,7 @@ Need more help? Contact support@speakoai.com
         await update.message.reply_text(help_text)
 
     async def practice_command(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ):
         """Handle /practice command"""
         keyboard = [
@@ -165,20 +184,20 @@ Need more help? Contact support@speakoai.com
         )
 
     async def progress_command(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ):
         """Handle /progress command"""
         user = update.effective_user
 
         try:
             # Get user from database
-            user_data = await rq.get_user(tg_id=user.id)
+            user_data = await rq_user.get_user(tg_id=user.id)
             if not user_data:
                 await update.message.reply_text("Please use /start to register first.")
                 return
 
             # Get user analytics
-            analytics = await rq.get_user_scores(user_id=user_data["id"])
+            analytics = await rq_analytics.get_user_scores(user_id=user_data["id"])
 
             if analytics and analytics.total_responses > 0:
                 progress_text = f"""
@@ -219,11 +238,11 @@ Your scores will appear here after you complete some practice sessions.
             )
 
     async def leaderboard_command(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ):
         """Handle /leaderboard command"""
         try:
-            leaderboard = await rq.get_leaderboard(limit=10)
+            leaderboard = await rq_analytics.get_leaderboard(limit=10)
 
             if leaderboard:
                 leaderboard_text = "🏆 Top Performers\n\n"
@@ -262,17 +281,17 @@ Your scores will appear here after you complete some practice sessions.
             await self.handle_question_response(update, context, question_id)
 
     async def send_question(
-        self,
-        update: Update,
-        context: ContextTypes.DEFAULT_TYPE,
-        part: Optional[int] = None,
+            self,
+            update: Update,
+            context: ContextTypes.DEFAULT_TYPE,
+            part: Optional[int] = None,
     ):
         """Send a question to the user"""
         try:
             if part:
-                questions = await rq.get_questions_by_part(part)
+                questions = await rq_analytics.get_questions_by_part(part)
             else:
-                questions = await rq.get_all_questions()
+                questions = await rq_analytics.get_all_questions()
 
             if not questions:
                 await update.callback_query.edit_message_text(
@@ -294,7 +313,7 @@ Your scores will appear here after you complete some practice sessions.
 **Question:**
 {question.question_text}
 
-{f"**Sample Answer Structure:**\n{question.sample_answer}" if question.sample_answer else ""}
+{f"**Sample Answer Structure: {question.sample_answer}" if question.sample_answer else ""}
 
 Please provide your detailed answer. Take your time and speak naturally!
             """
@@ -319,7 +338,7 @@ Please provide your detailed answer. Take your time and speak naturally!
             )
 
     async def handle_question_response(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE, question_id: int
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE, question_id: int
     ):
         """Handle when user indicates they've answered a question"""
         await update.callback_query.edit_message_text(
@@ -329,7 +348,7 @@ Please provide your detailed answer. Take your time and speak naturally!
         context.user_data["waiting_for_response"] = question_id
 
     async def handle_user_response(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ):
         """Handle user's text response to a question"""
         user = update.effective_user
@@ -345,7 +364,7 @@ Please provide your detailed answer. Take your time and speak naturally!
 
         try:
             # Get user from database
-            user_data = await rq.get_user(tg_id=user.id)
+            user_data = await rq_user.get_user(tg_id=user.id)
             if not user_data:
                 await update.message.reply_text("Please use /start to register first.")
                 return
@@ -371,7 +390,7 @@ Please provide your detailed answer. Take your time and speak naturally!
             }
 
             # Save response to database
-            saved_response = await rq.create_user_response(response_data)
+            saved_response = await rq_response.create_user_response(response_data)
 
             # Generate feedback message
             feedback_message = f"""

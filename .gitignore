@@ -1,4 +1,13 @@
 .env
-venv
 draft.py
 data.db
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+.env
+.DS_Store
+.idea/

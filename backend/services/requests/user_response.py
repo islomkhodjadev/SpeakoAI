@@ -48,6 +48,13 @@ async def get_user_response(session, response_id: int) -> Optional[UserResponseS
         return None
     return UserResponseSchema.model_validate(response)
 
+@connection
+async def get_all_responses(session) -> List[UserResponseSchema]:
+    """Get all user responses"""
+    result = await session.execute(select(UserResponse).order_by(UserResponse.created_at.desc()))
+    responses = result.scalars().all()
+    return [UserResponseSchema.model_validate(r) for r in responses]
+
 
 @connection
 async def get_user_responses(session, user_id: int) -> List[UserResponseSchema]:

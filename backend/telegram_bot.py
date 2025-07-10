@@ -42,7 +42,8 @@ logger = logging.getLogger(__name__)
 
 # Configuration (you'll need to set these)
 TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")  # Replace with your bot token
-API_BASE_URL = "http://localhost:8000/api"  # Your FastAPI server URL
+# API_BASE_URL = "http://localhost:8000/api"  # Your FastAPI server URL
+API_BASE_URL = os.getenv("API_BASE_URL", "http://miniapp-api:8000/api")
 
 
 class SpeakoAIBot:

@@ -127,3 +127,11 @@ class QuestionWithResponsesSchema(BaseModel):
     total_responses: int = 0
 
 
+class ScoreRequests(BaseModel):
+    question:str
+    answer: str
+    part: int
+
+
+class ScoreResponse(BaseModel):
+    score:str

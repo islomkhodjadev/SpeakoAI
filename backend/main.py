@@ -1,13 +1,15 @@
 from fastapi import FastAPI, Query
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from typing import Optional
 import uvicorn
+
+from backend.api.error_handle import http_exception_handler, validation_exception_handler
 from backend.core.db.models import init_db
 from backend.services import requests as rq
 from backend.models.schemas.schemas import UserSchema
-from backend.api import feedback, user, question, user_response, error_handle
+from backend.api import feedback, user, question, user_response, error_handle, ai_agent
 
 
 @asynccontextmanager
@@ -44,7 +46,9 @@ app.include_router(feedback.router)
 app.include_router(user.router)
 app.include_router(question.router)
 app.include_router(user_response.router)
-app.add_exception_handler(RequestValidationError, error_handle.http_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.include_router(ai_agent.router)
 
 
 @app.post("/api/telegram/user", response_model=UserSchema, tags=["Telegram Integration"])

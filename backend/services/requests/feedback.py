@@ -44,6 +44,15 @@ async def get_feedback(session, feedback_id: int) -> Optional[FeedbackSchema]:
 
 
 @connection
+async def get_all_feedbacks(session) -> List[FeedbackSchema]:
+    """Get all questions"""
+    result = await session.execute(select(Feedback).order_by(Feedback.ai_comment, Feedback.id))
+    feedbacks = result.scalars().all()
+    return [FeedbackSchema.model_validate(f) for f in feedbacks]
+
+
+
+@connection
 async def get_user_feedbacks(session, user_id: int) -> List[FeedbackSchema]:
     """Get all feedbacks for a user"""
     result = await session.execute(

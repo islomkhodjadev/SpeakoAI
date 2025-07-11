@@ -8,6 +8,5 @@ __pycache__/
 *.pyd
 *.sqlite3
 *.db
-.env
 .DS_Store
 .idea/
